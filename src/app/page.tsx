@@ -1,103 +1,81 @@
-import Image from "next/image";
+// src/app/page.tsx
+import BottomNav from "@/components/BottomNav"; // منوی پایین را وارد می‌کنیم
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="container mx-auto max-w-sm p-4">
+      <div className="flex flex-col min-h-screen">
+        <header className="flex justify-between items-center mb-6">
+          <span className="material-icons">apps</span>
+          <img
+            alt="آواتار کاربر"
+            className="w-10 h-10 rounded-full"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRH-ZliZr_u49GbZMyvvkHH02CGOUtSEe0DkrFGCns2pzh-NAtj4Fr3xp-e9k4gUYwdmclRPgAMNCw_PynehO28ieDNtTL_nQP8T7Epqg_d0z8i6iDxqQh9zrjzAUtPosUNX-xNaUd9pBPK0WFQnCcHQZqqoKmlDPmoIkYBytHD1_f9tMrl3Er8pfR8J7SOYayGl_CT2LaDWKi6t3BuCLy0ZAxZS24yv-mzCYDchHNimpT0on03caY8CclpxdZrNS1wpq4pKMv0i7Y"
+          />
+        </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+        <div className="relative mb-6">
+          <span className="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+            search
+          </span>
+          <input
+            className="w-full bg-custom-dark-2 rounded-lg py-3 pr-10 pl-16 border-none focus:ring-0"
+            placeholder="جستجو"
+            type="text"
+          />
+          <button className="absolute left-2 top-1/2 -translate-y-1/2 bg-custom-yellow text-black p-2 rounded-lg">
+            <span className="material-icons">tune</span>
+          </button>
+        </div>
+
+        <div className="relative bg-custom-dark-2 rounded-2xl p-6 mb-8 flex items-center h-48 overflow-hidden">
+          <div className="z-10">
+            <h1 className="text-3xl font-bold mb-2">کالکشن جدید</h1>
+            <p className="text-gray-300 mb-4">
+              جدیدترین ترندها
+              <br />
+              در کفش را کشف کنید.
+            </p>
+            <a
+              className="bg-custom-yellow text-black font-bold py-2 px-4 rounded-lg text-sm"
+              href="#"
+            >
+              اکنون خرید کنید
+            </a>
+          </div>
+          <img
+            alt="کفش شیک"
+            className="absolute left-0 bottom-0 h-40 w-40 object-cover -ml-8 -mb-4 transform rotate-[30deg]"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYy5snilEDJcTSFhIF3SIAijJk1Brd84kprZkiMBRGcoLoz2uPiuxRV6_gbIPfPTyKRr3pGmYriDdVzAvsVhja49FoLadU6IBTLspQJuHzRcZB66bqZvdTW6SWcpIDOe9Cet5lPW6RdFOI4Msa2J5GRzBhz2aoxfICcR676Khuo4yEuINwH4FgAuuyTQ0S2P5zkJJsDjSX_25OxsXU_xCc3A32XUJvhoC3qzEqpRCopKqRZjwc2xdFDQDWNcLHQpSBXBVnUoZaE064"
+          />
+        </div>
+
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">دسته‌بندی‌ها</h2>
+          <a className="text-custom-yellow text-sm" href="#">
+            مشاهده همه
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          {/* این بخش دسته‌بندی‌ها بعداً داینامیک می‌شود */}
+          <div className="relative rounded-lg overflow-hidden h-40">
+            <img
+              alt="دسته کفش‌های دویدن"
+              className="w-full h-full object-cover"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU_B-dPSBu55U3CWJ78sMuxu2EB7kumaXE7cksaVjojTrcu9-Vs6-91tYr2EYH_QiJ-B7IENLDLYuKv6PmFocXlyGCEsMoffx-euq8MWuBmIFHjCPVgreWYJpDrvmP0NbbYLu0nUOdWVz9QXALNi5ZsaAm5rKHmJvCT8hFc2SbIpcG4IJycFhED5FZog30fLG13XlGbVvGh34diKyYHIJWzBRowTVMr6UbR3jvGm-ka8bQ0zrwxANZsIBuQOHmGR462mZCBqZZz9t_"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-end p-3">
+              <span className="text-white font-semibold">دویدن</span>
+            </div>
+          </div>
+          {/* بقیه دسته‌بندی‌ها... */}
+        </div>
+
+        <div className="flex-grow"></div>
+
+        <BottomNav activePage="home" />
+      </div>
     </div>
   );
 }
