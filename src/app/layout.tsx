@@ -1,22 +1,27 @@
-import type { Metadata } from "next";
-import "./globals.css";
-// providers.tsx را از مرحله قبل نگه می‌داریم
-import { Providers } from "./providers";
+// src/app/layout.tsx
+"use client"; // ✅ برای استفاده از هوک، این را اضافه کنید
 
-export const metadata: Metadata = {
-  title: "اپلیکیشن فروشگاهی",
-  description: "فروشگاه آنلاین گیلاس",
-};
+import "./globals.css";
+import { Providers } from "./providers";
+import BottomNav from "@/components/BottomNav"; // ✅ ایمپورت BottomNav
+import { usePathname } from "next/navigation"; // ✅ ایمپورت هوک
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
+  // ✅ ما یک لیست از صفحاتی که "نباید" نوار پایین را داشته باشند، تعریف می‌کنیم
+  const noNavPages = ["/login", "/register", "/verify"];
+
+  // ✅ چک می‌کنیم که آیا صفحه فعلی در لیست بالا هست یا نه
+  const showNav = !noNavPages.some((path) => pathname.startsWith(path));
+
   return (
     <html lang="fa" dir="rtl">
       <head>
-        {/* افزودن فونت وزیرمتن و آیکون‌های متریال */}
         <link
           href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap"
           rel="stylesheet"
@@ -27,7 +32,16 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+
+          {/* ✅ اگر showNav برابر true بود، نوار پایین را نمایش بده */}
+          {showNav && (
+            <div className="fixed bottom-4 left-0 right-0 max-w-sm mx-auto z-50 px-4">
+              <BottomNav />
+            </div>
+          )}
+        </Providers>
       </body>
     </html>
   );

@@ -14,6 +14,7 @@ const GET_ALL_PRODUCTS_QUERY = `
       items {
         id
         name
+        slug
         featuredAsset {
           id
           preview

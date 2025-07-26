@@ -1,4 +1,12 @@
 @import "tailwindcss";
+/* ✅ این بخش را اضافه کنید */
+html,
+body,
+body > div:first-child,
+div#__next,
+div#__next > div {
+  height: 100%;
+}
 
 /*
   اینجا استایل‌های اصلی بدنه سایت را تنظیم می‌کنیم
