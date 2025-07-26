@@ -21,11 +21,6 @@ export default function CartPage() {
           مشاهده محصولات
         </Link>
       </div>
-
-      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto">
-        {/* ✅ اینجا activePage را "cart" قرار می‌دهیم تا دکمه سبد خرید فعال شود */}
-        <BottomNav activePage="cart" />
-      </div>
     </div>
   );
 }

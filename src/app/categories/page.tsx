@@ -51,11 +51,6 @@ export default function AllCategoriesPage() {
           <CategoryCard key={collection.id} collection={collection} />
         ))}
       </div>
-
-      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto">
-        {/* برای تجربه کاربری بهتر، دکمه دسته‌بندی‌ها را فعال می‌کنیم */}
-        <BottomNav activePage="categories" />
-      </div>
     </div>
   );
 }

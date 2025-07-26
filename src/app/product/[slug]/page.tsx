@@ -4,73 +4,22 @@
 import { useState, use } from "react";
 import { useQuery, useMutation } from "urql";
 import Link from "next/link";
-import BottomNav from "@/components/BottomNav";
 import ProductCard from "@/components/ProductCard";
 
-// کوئری برای دریافت اطلاعات کامل محصول و محصولات پیشنهادی
+// ... کوئری‌ها و توابع کمکی (GET_PRODUCT_DETAIL_QUERY, ADD_TO_CART_MUTATION, formatPrice, AccordionItem) بدون تغییر ...
 const GET_PRODUCT_DETAIL_QUERY = `
   query GetProductBySlug($slug: String!) {
-    product(slug: $slug) {
-      id
-      name
-      description
-      assets {
-        id
-        preview
-      }
-      optionGroups {
-        id
-        name
-        options {
-          id
-          name
-        }
-      }
-      variants {
-        id
-        name
-        price
-        options {
-          id
-          name
-        }
-      }
-    }
-    products(options: { take: 6 }) {
-        items {
-            id
-            name
-            slug
-            featuredAsset {
-                id
-                preview
-            }
-            variants {
-                price
-            }
-        }
-    }
+    product(slug: $slug) { id, name, description, assets { id, preview }, optionGroups { id, name, options { id, name } }, variants { id, name, price, options { id, name } } }
+    products(options: { take: 6 }) { items { id, name, slug, featuredAsset { id, preview }, variants { price } } }
   }
 `;
-
-// Mutation برای افزودن به سبد خرید
 const ADD_TO_CART_MUTATION = `
   mutation AddItemToOrder($variantId: ID!, $quantity: Int!) {
-    addItemToOrder(productVariantId: $variantId, quantity: $quantity) {
-      ... on Order {
-        id
-        totalQuantity
-      }
-    }
+    addItemToOrder(productVariantId: $variantId, quantity: $quantity) { ... on Order { id, totalQuantity } }
   }
 `;
-
-// تابع کمکی برای فرمت قیمت
-const formatPrice = (price: number) => {
-  return `${(price / 10).toLocaleString("fa-IR")} تومان`;
-};
-
-// کامپوننت داخلی برای بخش‌های آکاردئونی
+const formatPrice = (price: number) =>
+  `${(price / 10).toLocaleString("fa-IR")} تومان`;
 const AccordionItem = ({
   title,
   children,
@@ -89,46 +38,37 @@ const AccordionItem = ({
   </details>
 );
 
-// کامپوننت داخلی که منطق اصلی صفحه را در خود دارد
 function ProductDetails({ slug }: { slug: string }) {
+  // ... تمام State ها و منطق handleAddToCart مثل قبل ...
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, string>
   >({});
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addToCartMessage, setAddToCartMessage] = useState("");
-
   const [result] = useQuery({
     query: GET_PRODUCT_DETAIL_QUERY,
     variables: { slug },
   });
   const [cartResult, executeAddToCart] = useMutation(ADD_TO_CART_MUTATION);
-
   const { data, fetching, error } = result;
 
-  const handleOptionSelect = (optionGroupId: string, optionId: string) => {
+  const handleOptionSelect = (optionGroupId: string, optionId: string) =>
     setSelectedOptions((prev) => ({ ...prev, [optionGroupId]: optionId }));
-  };
-
   const handleAddToCart = async () => {
-    const selectedVariant = data?.product?.variants.find((variant: any) =>
-      variant.options.every((opt: any) =>
-        Object.values(selectedOptions).includes(opt.id)
-      )
+    const selectedVariant = data?.product?.variants.find((v: any) =>
+      v.options.every((o: any) => Object.values(selectedOptions).includes(o.id))
     );
-
     if (!selectedVariant) {
       setAddToCartMessage("لطفاً تمام گزینه‌ها را انتخاب کنید.");
       setTimeout(() => setAddToCartMessage(""), 2000);
       return;
     }
-
     setAddToCartMessage("");
-    const cartOpResult = await executeAddToCart({
+    const res = await executeAddToCart({
       variantId: selectedVariant.id,
       quantity: 1,
     });
-
-    if (cartOpResult.data?.addItemToOrder.__typename === "Order") {
+    if (res.data?.addItemToOrder.__typename === "Order") {
       setAddToCartMessage("محصول به سبد خرید اضافه شد!");
       setTimeout(() => setAddToCartMessage(""), 2000);
     } else {
@@ -145,7 +85,8 @@ function ProductDetails({ slug }: { slug: string }) {
   const { product, products: recommendedProducts } = data;
 
   return (
-    <div className="bg-custom-dark text-white min-h-screen">
+    // ✅✅ کلاس pb-28 را به این div اضافه می‌کنیم ✅✅
+    <div className="bg-custom-dark text-white pb-28">
       <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto z-20 flex items-center p-4 justify-between">
         <Link
           href="/"
@@ -161,7 +102,8 @@ function ProductDetails({ slug }: { slug: string }) {
         </Link>
       </header>
 
-      <div className="pb-48">
+      {/* محتوای اصلی صفحه محصول */}
+      <div>
         <div className="relative bg-black">
           <img
             src={product.assets[activeImageIndex]?.preview}
@@ -181,13 +123,11 @@ function ProductDetails({ slug }: { slug: string }) {
             ))}
           </div>
         </div>
-
         <div className="p-4">
           <h1 className="text-3xl font-bold">{product.name}</h1>
           <p className="text-2xl font-bold text-custom-yellow my-4">
             {formatPrice(product.variants[0]?.price || 0)}
           </p>
-
           {product.optionGroups.map((group: any) => (
             <div key={group.id} className="mb-6">
               <h3 className="font-bold mb-3">{group.name}</h3>
@@ -208,7 +148,6 @@ function ProductDetails({ slug }: { slug: string }) {
               </div>
             </div>
           ))}
-
           <AccordionItem title="توضیحات محصول">
             <div
               className="prose prose-invert max-w-none"
@@ -222,7 +161,6 @@ function ProductDetails({ slug }: { slug: string }) {
             <p>قوانین مربوط به ارسال و بازگشت کالا در اینجا قرار می‌گیرد.</p>
           </AccordionItem>
         </div>
-
         <div className="mt-8">
           <h2 className="text-xl font-bold px-4 mb-4">پیشنهاد ما برای شما</h2>
           <div className="flex space-x-4 space-x-reverse overflow-x-auto pb-4 -mb-4 px-4">
@@ -237,20 +175,19 @@ function ProductDetails({ slug }: { slug: string }) {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto z-30 p-4 pt-2 bg-custom-dark">
-        <div className="flex flex-col items-center gap-2">
-          <button
-            onClick={handleAddToCart}
-            disabled={cartResult.fetching}
-            className="w-full bg-custom-yellow text-black font-bold py-4 rounded-full flex items-center justify-center gap-2 disabled:bg-gray-500 shadow-lg"
-          >
-            <span className="material-icons">add_shopping_cart</span>
-            <span>افزودن به سبد خرید</span>
-          </button>
-          <BottomNav activePage="" />
-        </div>
+      {/* ✅ فقط دکمه افزودن به سبد خرید باقی می‌ماند (BottomNav حذف شد) */}
+      <div className="fixed bottom-24 left-0 right-0 max-w-sm mx-auto z-30 p-4 pt-2">
+        <button
+          onClick={handleAddToCart}
+          disabled={cartResult.fetching}
+          className="w-full bg-custom-yellow text-black font-bold py-4 rounded-full flex items-center justify-center gap-2 disabled:bg-gray-500 shadow-lg"
+        >
+          <span className="material-icons">add_shopping_cart</span>
+          <span>افزودن به سبد خرید</span>
+        </button>
       </div>
 
+      {/* موقعیت پیام */}
       {addToCartMessage && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg z-40">
           {addToCartMessage}
@@ -260,7 +197,7 @@ function ProductDetails({ slug }: { slug: string }) {
   );
 }
 
-// کامپوننت اصلی که از React.use() استفاده می‌کند
+// کامپوننت Wrapper بدون تغییر
 export default function ProductDetailPageWrapper({
   params,
 }: {

@@ -209,10 +209,6 @@ export default function ProfilePage() {
           </span>
         </button>
       </div>
-
-      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto">
-        <BottomNav activePage="profile" />
-      </div>
     </div>
   );
 }
