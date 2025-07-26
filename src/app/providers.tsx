@@ -1,13 +1,15 @@
 // src/app/providers.tsx
 "use client";
-// ✅  این import ها تغییر کرده است
 import { createClient, Provider, cacheExchange, fetchExchange } from "urql";
 
-// آدرس Shop API سرور Vendure شما
 const client = createClient({
   url: "http://localhost:3000/shop-api",
-  // ✅  این خط اضافه شده است
   exchanges: [cacheExchange, fetchExchange],
+  // ✅✅ این خط بسیار مهم را اضافه کنید ✅✅
+  // این به urql می‌گوید که کوکی‌ها را در تمام درخواست‌ها ارسال کند
+  fetchOptions: {
+    credentials: "include",
+  },
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {

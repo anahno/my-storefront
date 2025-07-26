@@ -1,10 +1,68 @@
 // src/app/page.tsx
-import BottomNav from "@/components/BottomNav"; // منوی پایین را وارد می‌کنیم
+"use client";
+
+import { useState } from "react";
+import { useQuery } from "urql";
+import BottomNav from "@/components/BottomNav";
+import Bestsellers from "@/components/Bestsellers"; // ✅ ایمپورت کامپوننت جدید
+import Categories from "@/components/Categories"; // ✅ ایمپورت کامپوننت جدید
+
+// کوئری GraphQL بدون تغییر باقی می‌ماند
+const GET_HOME_PAGE_DATA_QUERY = `
+  query GetHomePageData($collectionOptions: CollectionListOptions) {
+    products(options: { take: 6 }) {
+      items {
+        id
+        name
+        featuredAsset {
+          id
+          preview
+        }
+        variants {
+          price
+        }
+      }
+    }
+    collections(options: $collectionOptions) {
+      items {
+        id
+        name
+        featuredAsset {
+          id
+          preview
+        }
+      }
+      totalItems
+    }
+  }
+`;
 
 export default function HomePage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
+
+  const [result] = useQuery({
+    query: GET_HOME_PAGE_DATA_QUERY,
+    variables: {
+      collectionOptions: {
+        take: itemsPerPage,
+        skip: (currentPage - 1) * itemsPerPage,
+      },
+    },
+  });
+  const { data, fetching, error } = result;
+
+  if (fetching) return <p className="p-8">در حال بارگذاری...</p>;
+  if (error) return <p className="p-8">اوه... خطایی رخ داد: {error.message}</p>;
+
+  // محاسبات صفحه‌بندی همچنان در اینجا انجام می‌شود
+  const totalItems = data.collections.totalItems;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
   return (
-    <div className="container mx-auto max-w-sm p-4">
+    <div className="container mx-auto max-w-sm p-4 pb-28">
       <div className="flex flex-col min-h-screen">
+        {/* این بخش‌ها می‌توانند در آینده کامپوننت‌های خودشان را داشته باشند */}
         <header className="flex justify-between items-center mb-6">
           <span className="material-icons">apps</span>
           <img
@@ -50,30 +108,17 @@ export default function HomePage() {
           />
         </div>
 
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">دسته‌بندی‌ها</h2>
-          <a className="text-custom-yellow text-sm" href="#">
-            مشاهده همه
-          </a>
-        </div>
+        {/* ✅ استفاده از کامپوننت‌های جدید و پاس دادن داده‌ها به آنها */}
+        <Bestsellers products={data.products.items} />
 
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          {/* این بخش دسته‌بندی‌ها بعداً داینامیک می‌شود */}
-          <div className="relative rounded-lg overflow-hidden h-40">
-            <img
-              alt="دسته کفش‌های دویدن"
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCU_B-dPSBu55U3CWJ78sMuxu2EB7kumaXE7cksaVjojTrcu9-Vs6-91tYr2EYH_QiJ-B7IENLDLYuKv6PmFocXlyGCEsMoffx-euq8MWuBmIFHjCPVgreWYJpDrvmP0NbbYLu0nUOdWVz9QXALNi5ZsaAm5rKHmJvCT8hFc2SbIpcG4IJycFhED5FZog30fLG13XlGbVvGh34diKyYHIJWzBRowTVMr6UbR3jvGm-ka8bQ0zrwxANZsIBuQOHmGR462mZCBqZZz9t_"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-end p-3">
-              <span className="text-white font-semibold">دویدن</span>
-            </div>
-          </div>
-          {/* بقیه دسته‌بندی‌ها... */}
-        </div>
+        <Categories
+          collections={data.collections.items}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
 
         <div className="flex-grow"></div>
-
         <BottomNav activePage="home" />
       </div>
     </div>
