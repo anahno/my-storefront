@@ -3,10 +3,9 @@
 
 import { useQuery } from "urql";
 import Link from "next/link";
-import CategoryCard from "@/components/CategoryCard"; // ✅ استفاده مجدد از کارت
-import BottomNav from "@/components/BottomNav";
+import CategoryCard from "@/components/CategoryCard";
 
-// 1. یک کوئری جدید برای گرفتن همه دسته‌بندی‌ها بدون صفحه‌بندی
+// ✅ کوئری را برای دریافت فیلد صحیح featuredAsset اصلاح می‌کنیم
 const GET_ALL_COLLECTIONS_QUERY = `
   query GetAllCollections {
     collections(options: { take: 100 }) {
@@ -35,7 +34,6 @@ export default function AllCategoriesPage() {
 
   return (
     <div className="container mx-auto max-w-sm p-4 pb-28">
-      {/* 2. هدر صفحه با عنوان و دکمه بازگشت */}
       <header className="flex items-center mb-6 relative">
         <Link href="/" className="absolute right-0">
           <span className="material-icons text-white">arrow_forward</span>
@@ -44,8 +42,6 @@ export default function AllCategoriesPage() {
           همه دسته‌بندی‌ها
         </h1>
       </header>
-
-      {/* 3. نمایش دسته‌بندی‌ها در یک گرید */}
       <div className="grid grid-cols-2 gap-4">
         {data.collections.items.map((collection: any) => (
           <CategoryCard key={collection.id} collection={collection} />

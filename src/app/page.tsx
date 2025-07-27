@@ -6,10 +6,23 @@ import { useQuery } from "urql";
 import Bestsellers from "@/components/Bestsellers";
 import Categories from "@/components/Categories";
 
+// ✅ کوئری را برای دریافت فیلد صحیح featuredAsset اصلاح می‌کنیم
 const GET_HOME_PAGE_DATA_QUERY = `
   query GetHomePageData($collectionOptions: CollectionListOptions) {
-    products(options: { take: 6 }) { items { id, name, slug, featuredAsset { id, preview }, variants { price } } }
-    collections(options: $collectionOptions) { items { id, name, featuredAsset { id, preview } }, totalItems }
+    products(options: { take: 6 }) {
+      items { id, name, slug, featuredAsset { id, preview }, variants { price } }
+    }
+    collections(options: $collectionOptions) {
+      items {
+        id
+        name
+        featuredAsset {
+          id
+          preview
+        }
+      }
+      totalItems
+    }
   }
 `;
 
@@ -37,7 +50,6 @@ export default function HomePage() {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
-    // ✅✅ فقط این کلاس را اضافه کنید ✅✅
     <div className="container mx-auto max-w-sm p-4 pb-28">
       <header className="flex justify-between items-center mb-6">
         <span className="material-icons">apps</span>
@@ -47,7 +59,6 @@ export default function HomePage() {
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRH-ZliZr_u49GbZMyvvkHH02CGOUtSEe0DkrFGCns2pzh-NAtj4Fr3xp-e9k4gUYwdmclRPgAMNCw_PynehO28ieDNtTL_nQP8T7Epqg_d0z8i6iDxqQh9zrjzAUtPosUNX-xNaUd9pBPK0WFQnCcHQZqqoKmlDPmoIkYBytHD1_f9tMrl3Er8pfR8J7SOYayGl_CT2LaDWKi6t3BuCLy0ZAxZS24yv-mzCYDchHNimpT0on03caY8CclpxdZrNS1wpq4pKMv0i7Y"
         />
       </header>
-
       <div className="relative mb-6">
         <span className="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
           search
@@ -61,7 +72,6 @@ export default function HomePage() {
           <span className="material-icons">tune</span>
         </button>
       </div>
-
       <div className="relative bg-custom-dark-2 rounded-2xl p-6 mb-8 flex items-center h-48 overflow-hidden">
         <div className="z-10">
           <h1 className="text-3xl font-bold mb-2">کالکشن جدید</h1>
@@ -83,7 +93,6 @@ export default function HomePage() {
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYy5snilEDJcTSFhIF3SIAijJk1Brd84kprZkiMBRGcoLoz2uPiuxRV6_gbIPfPTyKRr3pGmYriDdVzAvsVhja49FoLadU6IBTLspQJuHzRcZB66bqZvdTW6SWcpIDOe9Cet5lPW6RdFOI4Msa2J5GRzBhz2aoxfICcR676Khuo4yEuINwH4FgAuuyTQ0S2P5zkJJsDjSX_25OxsXU_xCc3A32XUJvhoC3qzEqpRCopKqRZjwc2xdFDQDWNcLHQpSBXBVnUoZaE064"
         />
       </div>
-
       <Bestsellers products={data.products.items} />
       <Categories
         collections={data.collections.items}
