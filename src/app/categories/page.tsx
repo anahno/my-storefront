@@ -4,6 +4,7 @@
 import { useQuery } from "urql";
 import Link from "next/link";
 import CategoryCard from "@/components/CategoryCard";
+import { Collection } from "@/types"; // ✅ ایمپورت کردن تایپ
 
 // ✅ کوئری را برای دریافت فیلد صحیح featuredAsset اصلاح می‌کنیم
 const GET_ALL_COLLECTIONS_QUERY = `
@@ -43,7 +44,7 @@ export default function AllCategoriesPage() {
         </h1>
       </header>
       <div className="grid grid-cols-2 gap-4">
-        {data.collections.items.map((collection: any) => (
+        {data.collections.items.map((collection: Collection) => (
           <CategoryCard key={collection.id} collection={collection} />
         ))}
       </div>

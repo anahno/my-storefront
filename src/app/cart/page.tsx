@@ -3,8 +3,8 @@
 
 import { useQuery, useMutation } from "urql";
 import Link from "next/link";
-import BottomNav from "@/components/BottomNav";
-import CartItem from "@/components/CartItem"; // ✅ ایمپورت کامپوننت جدید
+import CartItem from "@/components/CartItem"; // ایمپورت کامپوننت جدید
+import { OrderLine } from "@/types"; // ایمپورت تایپ برای آیتم‌های سفارش
 
 // ۱. کوئری برای گرفتن اطلاعات کامل سبد خرید (سفارش فعال)
 const GET_ACTIVE_ORDER_QUERY = `
@@ -59,19 +59,18 @@ const formatPrice = (price: number) => {
 export default function CartPage() {
   const [result, reexecuteQuery] = useQuery({
     query: GET_ACTIVE_ORDER_QUERY,
-    // ✅ این خط تضمین می‌کند که سبد خرید همیشه به‌روز باشد
     requestPolicy: "cache-and-network",
   });
 
-  const [adjustResult, executeAdjust] = useMutation(ADJUST_ORDER_LINE_MUTATION);
-  const [removeResult, executeRemove] = useMutation(REMOVE_ORDER_LINE_MUTATION);
+  // ✅ متغیرهای استفاده نشده با آندرلاین جایگزین شدند
+  const [_, executeAdjust] = useMutation(ADJUST_ORDER_LINE_MUTATION);
+  const [__, executeRemove] = useMutation(REMOVE_ORDER_LINE_MUTATION);
 
   const { data, fetching, error } = result;
 
   const handleAdjustQuantity = async (lineId: string, quantity: number) => {
     const result = await executeAdjust({ lineId, quantity });
     if (!result.error) {
-      // ✅ بعد از هر تغییر، اطلاعات سبد خرید را دوباره از سرور می‌گیریم
       reexecuteQuery({ requestPolicy: "network-only" });
     }
   };
@@ -79,7 +78,6 @@ export default function CartPage() {
   const handleRemoveItem = async (lineId: string) => {
     const result = await executeRemove({ lineId });
     if (!result.error) {
-      // ✅ بعد از هر تغییر، اطلاعات سبد خرید را دوباره از سرور می‌گیریم
       reexecuteQuery({ requestPolicy: "network-only" });
     }
   };
@@ -93,7 +91,6 @@ export default function CartPage() {
 
   const order = data?.activeOrder;
 
-  // اگر سبد خرید خالی بود
   if (!order || order.lines.length === 0) {
     return (
       <div className="container mx-auto max-w-sm p-4 text-center">
@@ -128,7 +125,7 @@ export default function CartPage() {
 
       {/* لیست آیتم‌های سبد خرید */}
       <div className="space-y-4 mb-8">
-        {order.lines.map((line: any) => (
+        {order.lines.map((line: OrderLine) => (
           <CartItem
             key={line.id}
             item={line}
@@ -146,7 +143,7 @@ export default function CartPage() {
         </div>
         <div className="flex justify-between text-gray-300">
           <span>هزینه ارسال</span>
-          <span>رایگان</span> {/* فعلا ثابت */}
+          <span>رایگان</span>
         </div>
         <div className="border-t border-gray-700 my-2"></div>
         <div className="flex justify-between font-bold text-lg">

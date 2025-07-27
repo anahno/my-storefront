@@ -2,24 +2,13 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image"; // ✅ ایمپورت کردن کامپوننت Image
+import { OrderLine } from "@/types"; // ✅ ایمپورت کردن تایپ OrderLine
 
 // تابع کمکی برای فرمت قیمت
 const formatPrice = (price: number) => {
   return `${(price / 10).toLocaleString("fa-IR")} تومان`;
 };
-
-// تعریف نوع داده برای یک آیتم در سبد خرید
-interface OrderLine {
-  id: string;
-  quantity: number;
-  linePrice: number;
-  featuredAsset: {
-    preview: string;
-  };
-  productVariant: {
-    name: string;
-  };
-}
 
 // تعریف props کامپوننت
 interface CartItemProps {
@@ -55,9 +44,12 @@ export default function CartItem({ item, onAdjust, onRemove }: CartItemProps) {
         isUpdating ? "opacity-50" : "opacity-100"
       }`}
     >
-      <img
+      {/* ✅ تگ img با کامپوننت Image جایگزین شد */}
+      <Image
         src={item.featuredAsset.preview}
         alt={item.productVariant.name}
+        width={80}
+        height={80}
         className="w-20 h-20 object-cover rounded-md"
       />
       <div className="flex-grow">

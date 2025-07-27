@@ -4,8 +4,10 @@
 import { useQuery, useMutation } from "urql";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import BottomNav from "@/components/BottomNav";
+import Image from "next/image"; // ✅ ایمپورت کردن کامپوننت Image
+import { Customer, Order } from "@/types"; // ✅ ایمپورت کردن تایپ‌های مشخص
 
+// کوئری برای گرفتن اطلاعات مشتری
 const GET_CUSTOMER_DETAILS_QUERY = `
   query GetCustomerDetails {
     activeCustomer {
@@ -31,6 +33,7 @@ const GET_CUSTOMER_DETAILS_QUERY = `
   }
 `;
 
+// کوئری برای خروج از حساب
 const LOGOUT_MUTATION = `
   mutation Logout {
     logout {
@@ -39,6 +42,7 @@ const LOGOUT_MUTATION = `
   }
 `;
 
+// کامپوننت لینک‌های تنظیمات
 const SettingsLink = ({
   icon,
   text,
@@ -63,9 +67,10 @@ const SettingsLink = ({
 export default function ProfilePage() {
   const router = useRouter();
 
-  // ✅✅ تغییر اصلی اینجاست ✅✅
-  // ما به useQuery می‌گوییم که همیشه از شبکه برای گرفتن اطلاعات استفاده کند
-  const [getResult, reexecuteQuery] = useQuery({
+  // ✅ تایپ‌دهی مشخص به نتیجه کوئری
+  const [getResult, reexecuteQuery] = useQuery<{
+    activeCustomer: Customer | null;
+  }>({
     query: GET_CUSTOMER_DETAILS_QUERY,
     requestPolicy: "cache-and-network",
   });
@@ -75,7 +80,6 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     await executeLogout({});
-    // بعد از خروج، کوئری را دوباره اجرا می‌کنیم تا مطمئن شویم کاربر null است
     reexecuteQuery({ requestPolicy: "network-only" });
     router.push("/");
   };
@@ -108,11 +112,14 @@ export default function ProfilePage() {
   const primaryAddress = customer.addresses[0]
     ? `${customer.addresses[0].province}، ${customer.addresses[0].city}، ${customer.addresses[0].streetLine1}`
     : "شما هنوز آدرسی ثبت نکرده‌اید.";
+
   const orderStats = {
     total: customer.orders.totalItems,
-    active: customer.orders.items.filter((o: any) => o.active).length,
-    cancelled: customer.orders.items.filter((o: any) => o.state === "Cancelled")
-      .length,
+    // ✅ استفاده از تایپ مشخص برای آیتم سفارش (o)
+    active: customer.orders.items.filter((o: Order) => o.active).length,
+    cancelled: customer.orders.items.filter(
+      (o: Order) => o.state === "Cancelled"
+    ).length,
   };
 
   return (
@@ -122,9 +129,12 @@ export default function ProfilePage() {
       </header>
 
       <div className="flex items-center mb-8">
-        <img
+        {/* ✅ استفاده از کامپوننت Image به جای <img> */}
+        <Image
           src={`https://i.pravatar.cc/150?u=${customer.emailAddress}`}
           alt="آواتار کاربر"
+          width={64}
+          height={64}
           className="w-16 h-16 rounded-full ml-4"
         />
         <div>

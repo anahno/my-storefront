@@ -4,7 +4,8 @@
 import { useState } from "react";
 import { useMutation } from "urql";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// ✅ ایمپورت useRouter حذف شد چون استفاده نمی‌شد
+// import { useRouter } from "next/navigation";
 
 // کوئری ثبت‌نام بدون تغییر باقی می‌ماند
 const REGISTER_MUTATION = `
@@ -16,12 +17,13 @@ const REGISTER_MUTATION = `
 `;
 
 export default function RegisterPage() {
-  const router = useRouter();
+  // ✅ تعریف router حذف شد
+  // const router = useRouter();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [statusMessage, setStatusMessage] = useState({ type: "", text: "" }); // برای نمایش پیام موفقیت یا خطا
+  const [statusMessage, setStatusMessage] = useState({ type: "", text: "" });
 
   const [registerResult, executeRegister] = useMutation(REGISTER_MUTATION);
 
@@ -52,7 +54,6 @@ export default function RegisterPage() {
         setStatusMessage({ type: "error", text: "خطایی در ثبت‌نام رخ داد." });
       }
     } else if (result.data?.registerCustomerAccount?.__typename === "Success") {
-      // ✅ تغییر اصلی: به جای لاگین، پیام موفقیت را نمایش می‌دهیم
       setStatusMessage({
         type: "success",
         text: "ثبت‌نام شما با موفقیت انجام شد! لطفاً ایمیل خود را برای لینک فعال‌سازی بررسی کنید.",
@@ -69,7 +70,6 @@ export default function RegisterPage() {
         </p>
       </header>
 
-      {/* اگر ثبت‌نام موفق بود، فرم را مخفی کن */}
       {statusMessage.type === "success" ? (
         <div className="bg-green-900 border border-green-600 text-green-300 p-4 rounded-lg text-center">
           <p>{statusMessage.text}</p>
@@ -83,7 +83,6 @@ export default function RegisterPage() {
       ) : (
         <>
           <div className="flex flex-col space-y-4">
-            {/* ... فیلدهای ورودی مثل قبل ... */}
             <input
               type="text"
               placeholder="نام"

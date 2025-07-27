@@ -2,19 +2,44 @@
 
 import type { NextConfig } from "next";
 
+/** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  // این بخش را برای حل مشکل بارگذاری تصاویر از سرور Vendure اضافه می‌کنیم
+  // این بخش برای حل مشکل بارگذاری تصاویر از سرور Vendure است
   async rewrites() {
     return [
       {
-        // هر درخواستی که در فرانت‌اند به آدرس /assets/... ارسال شود
         source: "/assets/:path*",
-        // به صورت پشت صحنه به این آدرس در سرور Vendure هدایت خواهد شد
         destination: "http://localhost:3000/assets/:path*",
       },
     ];
   },
-  /* config options here */
+
+  // این بخش برای اجازه دادن به دامنه‌های خارجی جهت نمایش تصویر است
+  images: {
+    remotePatterns: [
+      // برای تصاویر از سرور Vendure (localhost)
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
+        pathname: "/assets/**",
+      },
+      // برای آواتارهای صفحه پروفایل
+      {
+        protocol: "https",
+        hostname: "i.pravatar.cc",
+      },
+      // برای آواتارهای گوگل (پوشش دادن همه زیردامنه‌ها)
+      {
+        protocol: "http",
+        hostname: "**.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**.googleusercontent.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

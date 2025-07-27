@@ -1,12 +1,12 @@
 // src/app/verify/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react"; // ✅ ایمپورت کردن Suspense
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMutation } from "urql";
 import Link from "next/link";
 
-// Mutation جدید برای تأیید حساب
+// Mutation برای تأیید حساب
 const VERIFY_ACCOUNT_MUTATION = `
   mutation VerifyCustomer($token: String!) {
     verifyCustomerAccount(token: $token) {
@@ -26,7 +26,8 @@ const VERIFY_ACCOUNT_MUTATION = `
   }
 `;
 
-export default function VerifyPage() {
+// ✅ محتوای اصلی را به یک کامپوننت جدید منتقل می‌کنیم
+function VerifyComponent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -43,7 +44,6 @@ export default function VerifyPage() {
         const data = result.data?.verifyCustomerAccount;
 
         if (data?.__typename === "CurrentUser") {
-          // موفقیت! کاربر تأیید و لاگین شد
           setStatusMessage(
             "حساب شما با موفقیت تأیید شد! در حال انتقال به پروفایل..."
           );
@@ -51,7 +51,6 @@ export default function VerifyPage() {
             router.push("/profile");
           }, 2000);
         } else {
-          // مدیریت خطا
           setStatusMessage("خطا در تأیید حساب: لینک نامعتبر یا منقضی شده است.");
         }
       } else {
@@ -63,7 +62,7 @@ export default function VerifyPage() {
   }, [token, executeVerify, router]);
 
   return (
-    <div className="container mx-auto max-w-sm p-4 flex flex-col justify-center items-center min-h-screen">
+    <div className="container mx-auto max-w-sm p-4 flex flex-col justify-center items-center min-h-screen text-center">
       <h1 className="text-2xl font-bold mb-4">تأیید حساب کاربری</h1>
       <p className="text-gray-400">{statusMessage}</p>
       {verifyResult.error && (
@@ -72,5 +71,14 @@ export default function VerifyPage() {
         </Link>
       )}
     </div>
+  );
+}
+
+// ✅ کامپوننت اصلی حالا شامل Suspense است
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={<p className="p-8 text-center">در حال بارگذاری...</p>}>
+      <VerifyComponent />
+    </Suspense>
   );
 }

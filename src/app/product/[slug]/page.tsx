@@ -5,8 +5,10 @@ import { useState, use } from "react";
 import { useQuery, useMutation } from "urql";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
+import Image from "next/image";
+import { Product, Asset } from "@/types"; // ✅ فقط تایپ‌های واقعاً مورد نیاز ایمپورت شدند
 
-// ... کوئری‌ها و توابع کمکی (GET_PRODUCT_DETAIL_QUERY, ADD_TO_CART_MUTATION, formatPrice, AccordionItem) بدون تغییر ...
+// کوئری‌ها و توابع کمکی بدون تغییر
 const GET_PRODUCT_DETAIL_QUERY = `
   query GetProductBySlug($slug: String!) {
     product(slug: $slug) { id, name, description, assets { id, preview }, optionGroups { id, name, options { id, name } }, variants { id, name, price, options { id, name } } }
@@ -18,8 +20,10 @@ const ADD_TO_CART_MUTATION = `
     addItemToOrder(productVariantId: $variantId, quantity: $quantity) { ... on Order { id, totalQuantity } }
   }
 `;
+
 const formatPrice = (price: number) =>
   `${(price / 10).toLocaleString("fa-IR")} تومان`;
+
 const AccordionItem = ({
   title,
   children,
@@ -38,25 +42,58 @@ const AccordionItem = ({
   </details>
 );
 
+// ✅✅✅ تعریف تایپ‌های دقیق و صحیح برای این فایل ✅✅✅
+interface Option {
+  id: string;
+  name: string;
+}
+interface OptionGroup {
+  id: string;
+  name: string;
+  options: Option[];
+}
+// ✅✅ این تایپ اصلاح شد تا شامل 'id' باشد
+interface Variant {
+  id: string;
+  name: string;
+  price: number;
+  options: Option[];
+}
+interface ProductDetail extends Product {
+  description: string;
+  assets: Asset[];
+  optionGroups: OptionGroup[];
+  variants: Variant[];
+}
+interface PageData {
+  product: ProductDetail;
+  products: { items: Product[] };
+}
+
 function ProductDetails({ slug }: { slug: string }) {
-  // ... تمام State ها و منطق handleAddToCart مثل قبل ...
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, string>
   >({});
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [addToCartMessage, setAddToCartMessage] = useState("");
-  const [result] = useQuery({
+
+  const [result] = useQuery<PageData>({
     query: GET_PRODUCT_DETAIL_QUERY,
     variables: { slug },
   });
+
   const [cartResult, executeAddToCart] = useMutation(ADD_TO_CART_MUTATION);
   const { data, fetching, error } = result;
 
   const handleOptionSelect = (optionGroupId: string, optionId: string) =>
     setSelectedOptions((prev) => ({ ...prev, [optionGroupId]: optionId }));
+
   const handleAddToCart = async () => {
-    const selectedVariant = data?.product?.variants.find((v: any) =>
-      v.options.every((o: any) => Object.values(selectedOptions).includes(o.id))
+    // ✅ حالا selectedVariant دارای پراپرتی id است
+    const selectedVariant = data?.product?.variants.find((v: Variant) =>
+      v.options.every((o: Option) =>
+        Object.values(selectedOptions).includes(o.id)
+      )
     );
     if (!selectedVariant) {
       setAddToCartMessage("لطفاً تمام گزینه‌ها را انتخاب کنید.");
@@ -65,7 +102,7 @@ function ProductDetails({ slug }: { slug: string }) {
     }
     setAddToCartMessage("");
     const res = await executeAddToCart({
-      variantId: selectedVariant.id,
+      variantId: selectedVariant.id, // ✅ بدون خطا
       quantity: 1,
     });
     if (res.data?.addItemToOrder.__typename === "Order") {
@@ -85,7 +122,6 @@ function ProductDetails({ slug }: { slug: string }) {
   const { product, products: recommendedProducts } = data;
 
   return (
-    // ✅✅ کلاس pb-28 را به این div اضافه می‌کنیم ✅✅
     <div className="bg-custom-dark text-white pb-28">
       <header className="fixed top-0 left-0 right-0 max-w-sm mx-auto z-20 flex items-center p-4 justify-between">
         <Link
@@ -101,20 +137,20 @@ function ProductDetails({ slug }: { slug: string }) {
           <span className="material-icons">shopping_cart</span>
         </Link>
       </header>
-
-      {/* محتوای اصلی صفحه محصول */}
       <div>
-        <div className="relative bg-black">
-          <img
+        <div className="relative bg-black h-96">
+          <Image
             src={product.assets[activeImageIndex]?.preview}
             alt={product.name}
-            className="w-full h-96 object-cover"
+            fill
+            priority
+            style={{ objectFit: "cover" }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-            {product.assets.map((_: any, index: number) => (
+            {product.assets.map((asset: Asset, index: number) => (
               <button
-                key={index}
+                key={asset.id}
                 onClick={() => setActiveImageIndex(index)}
                 className={`w-2 h-2 rounded-full ${
                   index === activeImageIndex ? "bg-white" : "bg-white/50"
@@ -128,11 +164,11 @@ function ProductDetails({ slug }: { slug: string }) {
           <p className="text-2xl font-bold text-custom-yellow my-4">
             {formatPrice(product.variants[0]?.price || 0)}
           </p>
-          {product.optionGroups.map((group: any) => (
+          {product.optionGroups.map((group: OptionGroup) => (
             <div key={group.id} className="mb-6">
               <h3 className="font-bold mb-3">{group.name}</h3>
               <div className="flex flex-wrap gap-3">
-                {group.options.map((option: any) => (
+                {group.options.map((option: Option) => (
                   <button
                     key={option.id}
                     onClick={() => handleOptionSelect(group.id, option.id)}
@@ -165,8 +201,8 @@ function ProductDetails({ slug }: { slug: string }) {
           <h2 className="text-xl font-bold px-4 mb-4">پیشنهاد ما برای شما</h2>
           <div className="flex space-x-4 space-x-reverse overflow-x-auto pb-4 -mb-4 px-4">
             {recommendedProducts.items
-              .filter((p: any) => p.id !== product.id)
-              .map((p: any) => (
+              .filter((p: Product) => p.id !== product.id)
+              .map((p: Product) => (
                 <div key={p.id} className="flex-none w-40">
                   <ProductCard product={p} />
                 </div>
@@ -174,8 +210,6 @@ function ProductDetails({ slug }: { slug: string }) {
           </div>
         </div>
       </div>
-
-      {/* ✅ فقط دکمه افزودن به سبد خرید باقی می‌ماند (BottomNav حذف شد) */}
       <div className="fixed bottom-24 left-0 right-0 max-w-sm mx-auto z-30 p-4 pt-2">
         <button
           onClick={handleAddToCart}
@@ -186,8 +220,6 @@ function ProductDetails({ slug }: { slug: string }) {
           <span>افزودن به سبد خرید</span>
         </button>
       </div>
-
-      {/* موقعیت پیام */}
       {addToCartMessage && (
         <div className="fixed bottom-40 left-1/2 -translate-x-1/2 bg-green-600 text-white py-2 px-4 rounded-lg shadow-lg z-40">
           {addToCartMessage}

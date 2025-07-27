@@ -3,11 +3,11 @@
 
 import { useQuery } from "urql";
 import Link from "next/link";
-import ProductCard from "@/components/ProductCard"; // ✅ استفاده مجدد از کارت محصول
+import ProductCard from "@/components/ProductCard";
 import BottomNav from "@/components/BottomNav";
+import { Product } from "@/types"; // ✅ ایمپورت کردن تایپ
 
-// 1. یک کوئری جدید برای گرفتن همه محصولات
-//    اینجا می‌توانیم take را روی عدد بزرگی مثل 100 تنظیم کنیم
+// کوئری برای گرفتن همه محصولات
 const GET_ALL_PRODUCTS_QUERY = `
   query GetAllProducts {
     products(options: { take: 100 }) {
@@ -40,7 +40,7 @@ export default function BestsellersPage() {
 
   return (
     <div className="container mx-auto max-w-sm p-4 pb-28">
-      {/* 2. هدر صفحه با عنوان و دکمه بازگشت */}
+      {/* هدر صفحه با عنوان و دکمه بازگشت */}
       <header className="flex items-center mb-6 relative">
         <Link href="/" className="absolute right-0">
           <span className="material-icons text-white">arrow_forward</span>
@@ -48,16 +48,15 @@ export default function BestsellersPage() {
         <h1 className="text-xl font-bold text-center w-full">محصولات پرفروش</h1>
       </header>
 
-      {/* 3. نمایش محصولات در یک گرید */}
+      {/* نمایش محصولات در یک گرید */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-6">
-        {data.products.items.map((product: any) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-
-      {/* ناوبری پایین صفحه */}
-      <div className="fixed bottom-0 left-0 right-0 max-w-sm mx-auto">
-        <BottomNav activePage="" /> {/* هیچ صفحه‌ای فعال نیست */}
+        {data.products.items.map(
+          (
+            product: Product // ✅ استفاده از تایپ مشخص
+          ) => (
+            <ProductCard key={product.id} product={product} />
+          )
+        )}
       </div>
     </div>
   );

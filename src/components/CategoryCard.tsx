@@ -1,6 +1,8 @@
 // src/components/CategoryCard.tsx
 "use client";
 
+import Image from "next/image"; // ✅ ایمپورت کردن کامپوننت Image
+
 interface Collection {
   id: string;
   name: string;
@@ -14,22 +16,18 @@ interface CategoryCardProps {
 }
 
 export default function CategoryCard({ collection }: CategoryCardProps) {
-  // ۱. آدرس کامل را از featuredAsset می‌گیریم
-  const fullImageUrl = collection.featuredAsset?.preview;
-
-  // ۲. بخش "http://localhost:3000" را از ابتدای آن حذف می‌کنیم
-  //    تا به یک آدرس نسبی مثل "/assets/preview/..." تبدیل شود
-  const imageUrl = fullImageUrl
-    ? fullImageUrl.replace("http://localhost:3000", "")
-    : undefined;
+  // ✅ آدرس کامل را مستقیماً از API بگیرید. دیگر نیازی به هیچ‌گونه پردازشی نیست.
+  const imageUrl = collection.featuredAsset?.preview;
 
   return (
     <div className="relative rounded-lg overflow-hidden h-40 bg-custom-dark-2">
       {imageUrl ? (
-        <img
+        // ✅ جایگزینی تگ <img> با کامپوننت Image
+        <Image
           alt={collection.name}
-          className="w-full h-full object-cover"
-          src={imageUrl}
+          src={imageUrl} // آدرس کامل و اصلی از API را به آن بدهید
+          fill
+          style={{ objectFit: "cover" }} // معادل کلاس object-cover
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center">

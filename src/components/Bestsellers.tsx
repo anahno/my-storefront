@@ -1,23 +1,15 @@
 // src/components/Bestsellers.tsx
 "use client";
 
-import ProductCard from "./ProductCard"; // ✅ ایمپورت کامپوننت جدید
-import Link from "next/link"; // ✅ برای ناوبری بهینه از Link استفاده می‌کنیم
+import ProductCard from "./ProductCard";
+import Link from "next/link";
+import { Product } from "@/types"; // ✅ ایمپورت کردن تایپ صحیح از فایل مرکزی
 
-// تعریف نوع داده‌ها مثل قبل
-interface Product {
-  id: string;
-  name: string;
-  featuredAsset?: {
-    preview: string;
-  };
-  variants: {
-    price: number;
-  }[];
-}
+// ❌ اینترفیس محلی و ناقص حذف شد
+// interface Product { ... }
 
 interface BestsellersProps {
-  products: Product[];
+  products: Product[]; // ✅ حالا از تایپ صحیح استفاده می‌کند
 }
 
 export default function Bestsellers({ products }: BestsellersProps) {
@@ -25,15 +17,14 @@ export default function Bestsellers({ products }: BestsellersProps) {
     <div className="mb-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">پرفروش‌ها</h2>
-        {/* ✅ لینک را به /bestsellers تغییر دادیم */}
         <Link href="/bestsellers" className="text-custom-yellow text-sm">
           مشاهده همه
         </Link>
       </div>
       <div className="flex space-x-4 space-x-reverse overflow-x-auto pb-4 -mb-4">
         {products.map((product) => (
-          // ✅ به جای تکرار کد، از کامپوننت ProductCard استفاده می‌کنیم
           <div key={product.id} className="flex-none w-40">
+            {/* حالا product شامل slug است و خطایی رخ نمی‌دهد */}
             <ProductCard product={product} />
           </div>
         ))}

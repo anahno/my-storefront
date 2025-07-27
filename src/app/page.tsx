@@ -5,8 +5,9 @@ import { useState } from "react";
 import { useQuery } from "urql";
 import Bestsellers from "@/components/Bestsellers";
 import Categories from "@/components/Categories";
+import Image from "next/image"; // ✅ ایمپورت کردن کامپوننت Image
 
-// ✅ کوئری را برای دریافت فیلد صحیح featuredAsset اصلاح می‌کنیم
+// کوئری برای دریافت اطلاعات صفحه اصلی
 const GET_HOME_PAGE_DATA_QUERY = `
   query GetHomePageData($collectionOptions: CollectionListOptions) {
     products(options: { take: 6 }) {
@@ -53,10 +54,13 @@ export default function HomePage() {
     <div className="container mx-auto max-w-sm p-4 pb-28">
       <header className="flex justify-between items-center mb-6">
         <span className="material-icons">apps</span>
-        <img
+        {/* ✅ تگ img با کامپوننت Image جایگزین شد */}
+        <Image
           alt="آواتار کاربر"
           className="w-10 h-10 rounded-full"
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRH-ZliZr_u49GbZMyvvkHH02CGOUtSEe0DkrFGCns2pzh-NAtj4Fr3xp-e9k4gUYwdmclRPgAMNCw_PynehO28ieDNtTL_nQP8T7Epqg_d0z8i6iDxqQh9zrjzAUtPosUNX-xNaUd9pBPK0WFQnCcHQZqqoKmlDPmoIkYBytHD1_f9tMrl3Er8pfR8J7SOYayGl_CT2LaDWKi6t3BuCLy0ZAxZS24yv-mzCYDchHNimpT0on03caY8CclpxdZrNS1wpq4pKMv0i7Y"
+          width={40}
+          height={40}
         />
       </header>
       <div className="relative mb-6">
@@ -87,10 +91,13 @@ export default function HomePage() {
             اکنون خرید کنید
           </a>
         </div>
-        <img
+        {/* ✅ تگ img با کامپوننت Image جایگزین شد */}
+        <Image
           alt="کفش شیک"
           className="absolute left-0 bottom-0 h-40 w-40 object-cover -ml-8 -mb-4 transform rotate-[30deg]"
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYy5snilEDJcTSFhIF3SIAijJk1Brd84kprZkiMBRGcoLoz2uPiuxRV6_gbIPfPTyKRr3pGmYriDdVzAvsVhja49FoLadU6IBTLspQJuHzRcZB66bqZvdTW6SWcpIDOe9Cet5lPW6RdFOI4Msa2J5GRzBhz2aoxfICcR676Khuo4yEuINwH4FgAuuyTQ0S2P5zkJJsDjSX_25OxsXU_xCc3A32XUJvhoC3qzEqpRCopKqRZjwc2xdFDQDWNcLHQpSBXBVnUoZaE064"
+          width={160}
+          height={160}
         />
       </div>
       <Bestsellers products={data.products.items} />
