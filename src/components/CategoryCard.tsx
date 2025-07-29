@@ -1,42 +1,48 @@
 // src/components/CategoryCard.tsx
 "use client";
 
-import Image from "next/image"; // ✅ ایمپورت کردن کامپوننت Image
+import Image from "next/image";
+import Link from "next/link";
+import type { FC } from "react";
+import { Collection } from "@/types"; // ✅ تایپ صحیح از فایل types.ts خوانده می‌شود
 
-interface Collection {
-  id: string;
-  name: string;
-  featuredAsset?: {
-    preview: string;
-  };
-}
-
+// ✅ تعریف پراپ‌ها اصلاح شد تا پراپ `category` را بپذیرد
 interface CategoryCardProps {
-  collection: Collection;
+  category: Collection;
 }
 
-export default function CategoryCard({ collection }: CategoryCardProps) {
-  // ✅ آدرس کامل را مستقیماً از API بگیرید. دیگر نیازی به هیچ‌گونه پردازشی نیست.
-  const imageUrl = collection.featuredAsset?.preview;
+const CategoryCard: FC<CategoryCardProps> = ({ category }) => {
+  if (!category) {
+    return null;
+  }
 
   return (
-    <div className="relative rounded-lg overflow-hidden h-40 bg-custom-dark-2">
-      {imageUrl ? (
-        // ✅ جایگزینی تگ <img> با کامپوننت Image
-        <Image
-          alt={collection.name}
-          src={imageUrl} // آدرس کامل و اصلی از API را به آن بدهید
-          fill
-          style={{ objectFit: "cover" }} // معادل کلاس object-cover
-        />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center">
-          <span className="material-icons text-gray-500 text-4xl">image</span>
-        </div>
-      )}
-      <div className="absolute inset-0 bg-black bg-opacity-40 flex items-end p-3">
-        <span className="text-white font-semibold">{collection.name}</span>
+    <Link
+      href={`/category/${category.slug}`}
+      className="group block border rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all"
+    >
+      <div className="aspect-square bg-gray-100 relative">
+        {category.featuredAsset ? (
+          <Image
+            src={category.featuredAsset.preview}
+            alt={category.name}
+            fill
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full bg-gray-200 text-gray-500">
+            بدون عکس
+          </div>
+        )}
       </div>
-    </div>
+      <div className="p-3 bg-white">
+        <h3 className="font-semibold text-base text-gray-800 truncate">
+          {category.name}
+        </h3>
+      </div>
+    </Link>
   );
-}
+};
+
+export default CategoryCard;

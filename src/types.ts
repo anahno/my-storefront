@@ -1,8 +1,11 @@
 // src/types.ts
 
+// ✅ تعریف Asset کامل شد
 export interface Asset {
   id: string;
   preview: string;
+  width: number;
+  height: number;
 }
 
 export interface ProductVariant {
@@ -18,10 +21,12 @@ export interface Product {
   variants: ProductVariant[];
 }
 
+// ✅ تعریف تکراری حذف و یک تعریف کامل جایگزین شد
 export interface Collection {
   id: string;
   name: string;
-  featuredAsset?: Asset;
+  slug: string;
+  featuredAsset?: Asset | null;
 }
 
 export interface OrderLine {
@@ -39,7 +44,6 @@ export interface Order {
   active: boolean;
 }
 
-// ✅ این دو اینترفیس اضافه شدند
 export interface Address {
   id: string;
   streetLine1: string;

@@ -5,6 +5,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import BottomNav from "@/components/BottomNav"; // ✅ ایمپورت BottomNav
 import { usePathname } from "next/navigation"; // ✅ ایمپورت هوک
+import UrqlProvider from "@/components/UrqlProvider"; // ✅ کامپوننتی که ساختیم را وارد می‌کنیم
 
 export default function RootLayout({
   children,

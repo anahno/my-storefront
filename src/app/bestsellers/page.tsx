@@ -4,7 +4,6 @@
 import { useQuery } from "urql";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
-import BottomNav from "@/components/BottomNav";
 import { Product } from "@/types"; // ✅ ایمپورت کردن تایپ
 
 // کوئری برای گرفتن همه محصولات

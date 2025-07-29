@@ -2,16 +2,14 @@
 
 import type { NextConfig } from "next";
 
-/** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
-  // این بخش برای حل مشکل بارگذاری تصاویر از سرور Vendure است
-  async rewrites() {
-    return [
-      {
-        source: "/assets/:path*",
-        destination: "http://localhost:3000/assets/:path*",
-      },
-    ];
+  // فعال کردن حالت سخت‌گیرانه ری‌اکت برای شناسایی بهتر خطاها
+  reactStrictMode: true,
+
+  // تنظیمات مربوط به کامپایلر Next.js
+  compiler: {
+    // حذف تمام console.log ها در نسخه نهایی (production)
+    removeConsole: process.env.NODE_ENV === "production",
   },
 
   // این بخش برای اجازه دادن به دامنه‌های خارجی جهت نمایش تصویر است
@@ -30,10 +28,6 @@ const nextConfig: NextConfig = {
         hostname: "i.pravatar.cc",
       },
       // برای آواتارهای گوگل (پوشش دادن همه زیردامنه‌ها)
-      {
-        protocol: "http",
-        hostname: "**.googleusercontent.com",
-      },
       {
         protocol: "https",
         hostname: "**.googleusercontent.com",

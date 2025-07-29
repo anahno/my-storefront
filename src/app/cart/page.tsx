@@ -63,7 +63,11 @@ export default function CartPage() {
   });
 
   // ✅ متغیرهای استفاده نشده با آندرلاین جایگزین شدند
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [_, executeAdjust] = useMutation(ADJUST_ORDER_LINE_MUTATION);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [__, executeRemove] = useMutation(REMOVE_ORDER_LINE_MUTATION);
 
   const { data, fetching, error } = result;
