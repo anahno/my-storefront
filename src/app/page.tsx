@@ -89,7 +89,7 @@ export default function HomePage() {
 
   const allProducts = data?.products?.items || [];
   const allCollections = data?.collections?.items || [];
-  const collectionsForSlider = allCollections.slice(0, 4);
+  const collectionsForSlider = allCollections.slice(0, 3);
 
   return (
     <>
