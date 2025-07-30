@@ -7,7 +7,7 @@ import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { Product, Asset } from "@/types";
 import { Suspense, useState } from "react";
-import FilterModal from "@/components/FilterModal";
+import FilterDropdown from "@/components/FilterDropdown"; // ✅ ایمپورت جدید
 
 // کوئری برای جستجو و فیلتر کردن محصولات
 const SEARCH_PRODUCTS_QUERY = `
@@ -65,9 +65,8 @@ function SearchComponent() {
     variables: {
       input: {
         term: searchTerm,
-        // اعمال فیلتر دسته‌بندی‌ها به کوئری
         facetValueIds: initialCollectionIds,
-        groupByProduct: true, // برای جلوگیری از نمایش محصولات تکراری
+        groupByProduct: true,
       },
     },
   });
@@ -82,8 +81,6 @@ function SearchComponent() {
     } else {
       params.delete("collectionId");
     }
-    // استفاده از router.replace برای جلوگیری از اضافه شدن به تاریخچه مرورگر
-    // این کار باعث می‌شود کامپوننت دوباره با پارامترهای جدید رندر شود
     router.replace(`/search?${params.toString()}`);
   };
 
@@ -115,49 +112,63 @@ function SearchComponent() {
   );
 
   return (
-    <>
-      <FilterModal
-        isOpen={isFilterOpen}
-        onClose={() => setFilterOpen(false)}
-        onApplyFilters={handleApplyFilters}
-        initialCollectionIds={initialCollectionIds}
-      />
-      <div className="container mx-auto max-w-sm p-4 pb-28">
-        <header className="flex items-center mb-6 relative">
-          <Link href="/" className="absolute right-0">
-            <span className="material-icons text-white">arrow_forward</span>
-          </Link>
-          <h1 className="text-xl font-bold text-center w-full">
-            نتایج جستجو برای: &quot;{searchTerm}&quot;
-          </h1>
-        </header>
+    <div className="container mx-auto max-w-sm p-4 pb-28">
+      <header className="flex items-center mb-6 relative">
+        <Link href="/" className="absolute right-0">
+          <span className="material-icons text-white">arrow_forward</span>
+        </Link>
+        <h1 className="text-xl font-bold text-center w-full">
+          نتایج جستجو برای: &quot;{searchTerm}&quot;
+        </h1>
+      </header>
 
-        <div className="flex items-center justify-between mb-6 p-2 bg-custom-dark-2 rounded-lg">
+      {/* ✅ نوار فیلتر و نتایج */}
+      <div className="relative mb-6">
+        <div className="flex items-center justify-between p-3 bg-custom-dark-2 rounded-lg">
           <p className="text-sm">
             {data?.search.totalItems || 0} محصول یافت شد
           </p>
-          <button
-            onClick={() => setFilterOpen(true)}
-            className="flex items-center gap-1 text-sm text-custom-yellow"
-          >
-            <span className="material-icons text-base">tune</span>
-            <span>فیلترها</span>
-          </button>
-        </div>
+          <div className="relative">
+            <button
+              onClick={() => setFilterOpen(!isFilterOpen)}
+              className={`flex items-center gap-1 text-sm transition-colors px-3 py-1 rounded-lg ${
+                isFilterOpen
+                  ? "bg-custom-yellow text-black"
+                  : "text-custom-yellow hover:bg-custom-dark"
+              }`}
+            >
+              <span className="material-icons text-base">tune</span>
+              <span>فیلترها</span>
+              {initialCollectionIds.length > 0 && (
+                <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {initialCollectionIds.length}
+                </span>
+              )}
+            </button>
 
-        {products.length > 0 ? (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-6">
-            {products.map((product) => (
-              <ProductCard key={product.variantId} product={product} />
-            ))}
+            {/* ✅ FilterDropdown جدید */}
+            <FilterDropdown
+              isOpen={isFilterOpen}
+              onClose={() => setFilterOpen(false)}
+              onApplyFilters={handleApplyFilters}
+              initialCollectionIds={initialCollectionIds}
+            />
           </div>
-        ) : (
-          <p className="text-center text-gray-400 mt-12">
-            محصولی مطابق با جستجوی شما یافت نشد.
-          </p>
-        )}
+        </div>
       </div>
-    </>
+
+      {products.length > 0 ? (
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+          {products.map((product) => (
+            <ProductCard key={product.variantId} product={product} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-400 mt-12">
+          محصولی مطابق با جستجوی شما یافت نشد.
+        </p>
+      )}
+    </div>
   );
 }
 

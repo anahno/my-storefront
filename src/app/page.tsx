@@ -7,7 +7,7 @@ import Image from "next/image";
 
 import Bestsellers from "@/components/Bestsellers";
 import Categories from "@/components/Categories";
-import FilterModal from "@/components/FilterModal";
+import FilterDropdown from "@/components/FilterDropdown"; // ✅ ایمپورت جدید
 import HeroSlider from "@/components/HeroSlider";
 
 // کوئری کامل و اصلاح شده
@@ -89,36 +89,30 @@ export default function HomePage() {
 
   const allProducts = data?.products?.items || [];
   const allCollections = data?.collections?.items || [];
-  const collectionsForSlider = allCollections.slice(0, 3);
+  const collectionsForSlider = allCollections.slice(0, 4);
 
   return (
-    <>
-      <FilterModal
-        isOpen={isFilterOpen}
-        onClose={() => setFilterOpen(false)}
-        onApplyFilters={handleApplyFiltersFromHome}
-      />
-      {/* ✅ استایل پس‌زمینه اصلی به کل صفحه اضافه شد */}
-      <div className="bg-black text-white container mx-auto max-w-sm p-4 pb-28">
-        <header className="flex justify-between items-center mb-6">
-          <span className="material-icons">apps</span>
-          <Image
-            alt="آواتار کاربر"
-            className="w-10 h-10 rounded-full"
-            src="https://i.pravatar.cc/40"
-            width={40}
-            height={40}
-          />
-        </header>
+    <div className="bg-black text-white container mx-auto max-w-sm p-4 pb-28">
+      <header className="flex justify-between items-center mb-6">
+        <span className="material-icons">apps</span>
+        <Image
+          alt="آواتار کاربر"
+          className="w-10 h-10 rounded-full"
+          src="https://i.pravatar.cc/40"
+          width={40}
+          height={40}
+        />
+      </header>
 
-        <form onSubmit={handleSearch} className="relative mb-6">
+      {/* ✅ فرم جستجو با dropdown positioning */}
+      <div className="relative mb-6">
+        <form onSubmit={handleSearch} className="relative">
           <button
             type="submit"
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
           >
             <span className="material-icons">search</span>
           </button>
-          {/* ✅ استایل اصلی کادر جستجو بازگردانده شد */}
           <input
             className="w-full bg-custom-dark-2 rounded-lg py-3 pr-10 pl-28 border-none focus:ring-0 text-white"
             placeholder="جستجو"
@@ -126,23 +120,34 @@ export default function HomePage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {/* ✅ استایل اصلی دکمه فیلتر بازگردانده شد */}
-          <button
-            onClick={() => setFilterOpen(true)}
-            type="button"
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-custom-dark text-custom-yellow px-3 py-2 rounded-lg flex items-center gap-1 text-sm"
-          >
-            <span className="material-icons text-base">tune</span>
-            <span>فیلترها</span>
-          </button>
+          {/* ✅ دکمه فیلتر با relative positioning */}
+          <div className="absolute left-2 top-1/2 -translate-y-1/2">
+            <button
+              onClick={() => setFilterOpen(!isFilterOpen)}
+              type="button"
+              className={`bg-custom-dark text-custom-yellow px-3 py-2 rounded-lg flex items-center gap-1 text-sm transition-colors ${
+                isFilterOpen ? "bg-custom-yellow text-black" : ""
+              }`}
+            >
+              <span className="material-icons text-base">tune</span>
+              <span>فیلترها</span>
+            </button>
+
+            {/* ✅ FilterDropdown جدید */}
+            <FilterDropdown
+              isOpen={isFilterOpen}
+              onClose={() => setFilterOpen(false)}
+              onApplyFilters={handleApplyFiltersFromHome}
+            />
+          </div>
         </form>
-
-        <HeroSlider collections={collectionsForSlider} />
-
-        <Bestsellers products={allProducts} />
-
-        <Categories collections={allCollections} />
       </div>
-    </>
+
+      <HeroSlider collections={collectionsForSlider} />
+
+      <Bestsellers products={allProducts} />
+
+      <Categories collections={allCollections} />
+    </div>
   );
 }
