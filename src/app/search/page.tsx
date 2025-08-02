@@ -7,7 +7,7 @@ import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { Product, Asset } from "@/types";
 import { Suspense, useState } from "react";
-import FilterDropdown from "@/components/FilterDropdown"; // ✅ ایمپورت جدید
+import FilterDropdown from "@/components/FilterDropdown";
 
 // کوئری برای جستجو و فیلتر کردن محصولات
 const SEARCH_PRODUCTS_QUERY = `
@@ -122,31 +122,38 @@ function SearchComponent() {
         </h1>
       </header>
 
-      {/* ✅ نوار فیلتر و نتایج */}
-      <div className="relative mb-6">
-        <div className="flex items-center justify-between p-3 bg-custom-dark-2 rounded-lg">
-          <p className="text-sm">
-            {data?.search.totalItems || 0} محصول یافت شد
-          </p>
-          <div className="relative">
+      {/* نوار فیلتر و نتایج - با positioning بهتر */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between p-4 bg-custom-dark-2 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span className="material-icons text-custom-yellow text-sm">
+              search
+            </span>
+            <p className="text-sm text-white">
+              {data?.search.totalItems || 0} محصول یافت شد
+            </p>
+          </div>
+
+          {/* Container برای دکمه فیلتر و dropdown */}
+          <div className="relative z-[90]">
             <button
               onClick={() => setFilterOpen(!isFilterOpen)}
-              className={`flex items-center gap-1 text-sm transition-colors px-3 py-1 rounded-lg ${
+              className={`flex items-center gap-2 text-sm transition-all duration-200 px-4 py-2 rounded-lg font-medium ${
                 isFilterOpen
-                  ? "bg-custom-yellow text-black"
-                  : "text-custom-yellow hover:bg-custom-dark"
+                  ? "bg-custom-yellow text-black shadow-lg"
+                  : "text-custom-yellow hover:bg-custom-dark border border-custom-yellow/30"
               }`}
             >
               <span className="material-icons text-base">tune</span>
               <span>فیلترها</span>
               {initialCollectionIds.length > 0 && (
-                <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold animate-pulse">
                   {initialCollectionIds.length}
                 </span>
               )}
             </button>
 
-            {/* ✅ FilterDropdown جدید */}
+            {/* FilterDropdown */}
             <FilterDropdown
               isOpen={isFilterOpen}
               onClose={() => setFilterOpen(false)}
@@ -155,6 +162,32 @@ function SearchComponent() {
             />
           </div>
         </div>
+
+        {/* نمایش فیلترهای فعال */}
+        {initialCollectionIds.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {initialCollectionIds.map((id, index) => (
+              <span
+                key={id}
+                className="inline-flex items-center gap-1 bg-custom-yellow/20 text-custom-yellow px-3 py-1 rounded-full text-xs border border-custom-yellow/30"
+              >
+                <span className="material-icons text-xs">label</span>
+                فیلتر {index + 1}
+                <button
+                  onClick={() => {
+                    const newIds = initialCollectionIds.filter(
+                      (colId) => colId !== id
+                    );
+                    handleApplyFilters({ collectionIds: newIds });
+                  }}
+                  className="hover:text-red-400 transition-colors"
+                >
+                  <span className="material-icons text-xs">close</span>
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {products.length > 0 ? (
@@ -164,9 +197,13 @@ function SearchComponent() {
           ))}
         </div>
       ) : (
-        <p className="text-center text-gray-400 mt-12">
-          محصولی مطابق با جستجوی شما یافت نشد.
-        </p>
+        <div className="text-center text-gray-400 mt-16">
+          <span className="material-icons text-6xl mb-4 text-gray-600">
+            search_off
+          </span>
+          <p className="text-lg mb-2">محصولی یافت نشد</p>
+          <p className="text-sm">لطفاً کلمات کلیدی دیگری امتحان کنید</p>
+        </div>
       )}
     </div>
   );
@@ -177,7 +214,12 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <p className="p-8 text-center">در حال بارگذاری صفحه جستجو...</p>
+        <div className="p-8 text-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-custom-yellow border-t-transparent rounded-full animate-spin"></div>
+            <span>در حال بارگذاری صفحه جستجو...</span>
+          </div>
+        </div>
       }
     >
       <SearchComponent />

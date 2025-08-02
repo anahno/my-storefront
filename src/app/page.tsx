@@ -7,7 +7,7 @@ import Image from "next/image";
 
 import Bestsellers from "@/components/Bestsellers";
 import Categories from "@/components/Categories";
-import FilterDropdown from "@/components/FilterDropdown"; // ✅ ایمپورت جدید
+import FilterDropdown from "@/components/FilterDropdown";
 import HeroSlider from "@/components/HeroSlider";
 
 // کوئری کامل و اصلاح شده
@@ -76,14 +76,26 @@ export default function HomePage() {
 
   if (fetching) {
     return (
-      <p className="p-8 text-center text-lg text-white">در حال بارگذاری...</p>
+      <div className="bg-black text-white container mx-auto max-w-sm p-4 pb-28">
+        <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+          <div className="w-12 h-12 border-4 border-custom-yellow border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-lg text-white">در حال بارگذاری...</p>
+        </div>
+      </div>
     );
   }
   if (error) {
     return (
-      <p className="p-8 text-center text-red-400">
-        اوه... خطایی رخ داد: {error.message}
-      </p>
+      <div className="bg-black text-white container mx-auto max-w-sm p-4 pb-28">
+        <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+          <span className="material-icons text-6xl text-red-400">
+            error_outline
+          </span>
+          <p className="text-center text-red-400">
+            اوه... خطایی رخ داد: {error.message}
+          </p>
+        </div>
+      </div>
     );
   }
 
@@ -104,36 +116,39 @@ export default function HomePage() {
         />
       </header>
 
-      {/* ✅ فرم جستجو با dropdown positioning */}
-      <div className="relative mb-6">
+      {/* فرم جستجو با dropdown positioning بهبود یافته */}
+      <div className="mb-6">
         <form onSubmit={handleSearch} className="relative">
           <button
             type="submit"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 hover:text-custom-yellow transition-colors"
           >
             <span className="material-icons">search</span>
           </button>
           <input
-            className="w-full bg-custom-dark-2 rounded-lg py-3 pr-10 pl-28 border-none focus:ring-0 text-white"
-            placeholder="جستجو"
+            className="w-full bg-custom-dark-2 rounded-xl py-4 pr-12 pl-32 border-none focus:ring-2 focus:ring-custom-yellow text-white placeholder-gray-400 transition-all duration-200"
+            placeholder="جستجو در محصولات..."
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {/* ✅ دکمه فیلتر با relative positioning */}
-          <div className="absolute left-2 top-1/2 -translate-y-1/2">
+
+          {/* دکمه فیلتر با positioning بهتر */}
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 z-[90]">
             <button
               onClick={() => setFilterOpen(!isFilterOpen)}
               type="button"
-              className={`bg-custom-dark text-custom-yellow px-3 py-2 rounded-lg flex items-center gap-1 text-sm transition-colors ${
-                isFilterOpen ? "bg-custom-yellow text-black" : ""
+              className={`flex items-center gap-2 text-sm transition-all duration-200 px-4 py-2 rounded-lg font-medium ${
+                isFilterOpen
+                  ? "bg-custom-yellow text-black shadow-lg transform scale-105"
+                  : "bg-custom-dark text-custom-yellow hover:bg-custom-dark-2 border border-custom-yellow/30"
               }`}
             >
               <span className="material-icons text-base">tune</span>
-              <span>فیلترها</span>
+              <span className="hidden sm:inline">فیلترها</span>
             </button>
 
-            {/* ✅ FilterDropdown جدید */}
+            {/* FilterDropdown */}
             <FilterDropdown
               isOpen={isFilterOpen}
               onClose={() => setFilterOpen(false)}
